@@ -5,7 +5,7 @@ import (
 	"github.com/h8gi/canvas"
 	"math/rand"
 	"github.com/faiface/pixel/pixelgl"
-	// "fmt"
+	"fmt"
 )
 
 type Ball struct {
@@ -29,19 +29,28 @@ func main() {
 		FrameRate: FRAME_RATE,
 	})
 
-	balls := make([]Ball, 10)
+	balls := make([]Ball, 1)
 	for _, b := range balls {
 		r := randFloat(0, 80)
-		b.location = vector.Create(randFloat(r, WIDTH-r), HEIGHT/2)
-		b.velocity = vector.Create(0, -1)
+		b.location = vector.Create(WIDTH/2, HEIGHT-r)
+		b.velocity = vector.Create(0, -2)
 		b.acceleration = vector.Create(0, 0)
 		b.radius = r
 		b.mass = r
 		balls = append(balls, b)
 	}
 
-	wind := vector.Create(-0.4, 0)
-	gravitation := vector.Create(0.0, -1)
+	m := 47.0 // coeficient of air friction
+
+	// wind := vector.Create(-0.4, 0)
+	gravitation := vector.Create(0.0, -5)
+	friction := gravitation.Copy()
+
+	friction.Normal()
+	friction.Mult(-1)
+	friction.Mult(m)
+
+	fmt.Println(friction)
 
 	c.Draw(func(ctx *canvas.Context) {
 		ctx.SetRGB(1, 1, 1)
@@ -52,7 +61,9 @@ func main() {
 			balls[i].Move()
 			balls[i].Edge()
 			if ctx.IsKeyPressed(pixelgl.MouseButtonLeft) {
-				balls[i].applyForce(wind)
+				// balls[i].applyForce(wind)
+				fmt.Println("PRESSED")
+				balls[i].applyForce(friction)
 			}
 			balls[i].applyForce(gravitation)
 		}
