@@ -1,19 +1,19 @@
 package main
 
 import (
+	"github.com/tagaism/vectorgo"
 	"github.com/h8gi/canvas"
 	"math/rand"
+	"github.com/faiface/pixel/pixelgl"
+	// "fmt"
 )
 
-type Vector struct {
-	x float64
-	y float64
-}
-
 type Ball struct {
-	location Vector
-	velocity Vector
+	location vector.Vector
+	velocity vector.Vector
+	acceleration vector.Vector
 	radius float64
+	mass float64
 }
 
 const (
@@ -29,16 +29,20 @@ func main() {
 		FrameRate: FRAME_RATE,
 	})
 
-	balls := []Ball{}
-	for i := 0; i < 10; i++ {
+	balls := make([]Ball, 10)
+	for _, b := range balls {
 		r := randFloat(0, 80)
-		b := Ball{
-			location : Vector{randFloat(r, WIDTH-r), randFloat(r, HEIGHT-r)},
-			velocity : Vector{randFloat(-5, 5), randFloat(-5, 5)},
-			radius : r,
-		}
+		b.location = vector.Create(randFloat(r, WIDTH-r), HEIGHT/2)
+		b.velocity = vector.Create(0, -1)
+		b.acceleration = vector.Create(0, 0)
+		b.radius = r
+		b.mass = r
 		balls = append(balls, b)
 	}
+
+	wind := vector.Create(-0.4, 0)
+	gravitation := vector.Create(0.0, -1)
+
 	c.Draw(func(ctx *canvas.Context) {
 		ctx.SetRGB(1, 1, 1)
 		ctx.Clear()
@@ -47,38 +51,43 @@ func main() {
 			balls[i].DrawBall(ctx)
 			balls[i].Move()
 			balls[i].Edge()
+			if ctx.IsKeyPressed(pixelgl.MouseButtonLeft) {
+				balls[i].applyForce(wind)
+			}
+			balls[i].applyForce(gravitation)
 		}
 		ctx.Pop()
 	})
 }
 
-// Vectors logic
-func (a *Vector) Add(b Vector) {
-	(*a).x += b.x
-	(*a).y += b.y
-}
-
-// Balls logic
 func randFloat(min, max float64) float64 {
 	return min + rand.Float64()*(max - min)
 }
 
 func (b *Ball) DrawBall(ctx *canvas.Context) {
 	ctx.SetRGB(0, 0, 0)
-	ctx.DrawCircle(b.location.x, b.location.y, b.radius)
+	ctx.DrawCircle(b.location.X, b.location.Y, b.radius)
 	ctx.Stroke()
 	ctx.SetLineWidth(1)
 }
 
 func (b *Ball) Move() {
+	b.velocity.Add(b.acceleration)
 	b.location.Add(b.velocity)
+	b.acceleration.Mult(0)
 }
 
 func (b *Ball) Edge() {
-	if b.location.x < b.radius || b.location.x > WIDTH - b.radius {
-		b.velocity.x *= -1
+	if b.location.X < b.radius || b.location.X > WIDTH - b.radius {
+		b.velocity.X *= -1
 	}
-	if b.location.y < b.radius || b.location.y > HEIGHT - b.radius {
-		b.velocity.y *= -1
+	if b.location.Y < b.radius || b.location.Y > HEIGHT - b.radius {
+		b.velocity.Y *= -1
 	}
+}
+
+// Newton's 2nd law with mass
+func (b *Ball) applyForce(f vector.Vector) {
+	f.Div(b.mass)
+	b.acceleration.Add(f)
 }
