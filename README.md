@@ -13,3 +13,7 @@ Created bunch of random balls by vectorizing location and velocity<br/>
 Each ball attracts others and is attracted by others. Attraction force is calculated based on the mass of balls and the distance between them <img src="https://bit.ly/3dQgLYh" align="center" border="0" alt="(F_{g} = G \frac{m_{1} * m_{2} }{R^{2} }   )" width="128" height="32" />. God bless Newton and his <a href="https://en.wikipedia.org/wiki/Newton%27s_law_of_universal_gravitation">Law of universal gravitation</a>
 ![](mutual_attractors/mutual_attractors.gif)
 <hr>
+
+### Oscillating around attractor
+Oscillatings swings around attractor. Oscilating faster when getting closer.
+![](oscilation/oscillations_around_attractor.gif)

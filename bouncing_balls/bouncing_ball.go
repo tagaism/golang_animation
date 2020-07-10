@@ -55,7 +55,6 @@ func main() {
 	c.Draw(func(ctx *canvas.Context) {
 		ctx.SetRGB(1, 1, 1)
 		ctx.Clear()
-		ctx.Push()
 		for i := 0; i < len(balls); i++ {
 			balls[i].DrawBall(ctx)
 			balls[i].Move()
@@ -67,7 +66,6 @@ func main() {
 			}
 			balls[i].applyForce(gravitation)
 		}
-		ctx.Pop()
 	})
 }
 

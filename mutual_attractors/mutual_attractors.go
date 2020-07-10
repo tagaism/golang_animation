@@ -64,7 +64,6 @@ func main() {
 	c.Draw(func(ctx *canvas.Context) {
 		ctx.SetRGB(1, 1, 1)
 		ctx.Clear()
-		ctx.Push()
 			
 		for i := 0; i < len(balls); i++ {
 			for j := 0; j < len(balls); j++ {
@@ -77,7 +76,6 @@ func main() {
 			balls[i].Move()
 			balls[i].Edge()
 		}
-		ctx.Pop()
 	})
 }
 
